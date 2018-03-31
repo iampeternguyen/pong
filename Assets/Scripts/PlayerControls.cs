@@ -12,6 +12,9 @@ public class PlayerControls : MonoBehaviour
     public float speed = 10f;
     public float boundary = 4.0f;
 
+    public float response_line = 0f;
+    public bool human_player = false;
+
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -20,7 +23,29 @@ public class PlayerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DoNoTGoPastBoundary();
+        if (GameManager.instance.NumberPlayers == 2)
+        {
+            PlayerMove();
+        }
+        else if (GameManager.instance.NumberPlayers == 1 && human_player)
+        {
+            PlayerMove();
+        }
+        else
+        {
+            AIMove();
+        }
+
+
+
+
+    }
+
+    public void PlayerMove()
+    {
         var velocity = rigidBody.velocity;
+
 
         if (Input.GetKey(moveUp))
         {
@@ -33,12 +58,21 @@ public class PlayerControls : MonoBehaviour
         else if (!Input.anyKey)
         {
             velocity.y = 0;
-
         }
+
+
+
 
         rigidBody.velocity = velocity;
 
+
+    }
+
+    private void DoNoTGoPastBoundary()
+    {
+
         var position = transform.position;
+
         if (position.y > boundary)
         {
             position.y = boundary;
@@ -48,6 +82,25 @@ public class PlayerControls : MonoBehaviour
             position.y = -boundary;
         }
         transform.position = position;
+    }
 
+    public void AIMove()
+    {
+        if (Ball.instance.transform.position.x > response_line)
+        {
+            var velocity = rigidBody.velocity;
+
+            if (Ball.instance.transform.position.y > transform.position.y && Ball.instance.GetComponent<Rigidbody2D>().velocity.x > 0)
+            {
+                velocity.y = speed;
+            }
+            else if (Ball.instance.transform.position.y < transform.position.y && Ball.instance.GetComponent<Rigidbody2D>().velocity.x > 0)
+            {
+                velocity.y = -speed;
+            }
+
+            rigidBody.velocity = velocity;
+
+        }
     }
 }

@@ -14,10 +14,20 @@ public class GameManager : MonoBehaviour
     public Text p1_score_text;
     public Text p2_score_text;
 
+    public Button one_player_button;
+    public Button two_player_button;
+
     public Text general;
 
     public Text subtitle;
 
+    private int numberPlayers = 0;
+
+    public int NumberPlayers
+    {
+        get { return numberPlayers; }
+    }
+    private GameObject player;
     private int lastScored = 0;
     public int LastScored
     {
@@ -26,9 +36,8 @@ public class GameManager : MonoBehaviour
 
 
 
-    public GameObject ball;
 
-    private string gameStatus = "serve";
+    private string gameStatus = "start";
 
     public string GameStatus
     {
@@ -56,15 +65,37 @@ public class GameManager : MonoBehaviour
         p2_score_text.text = "0";
         general.text = "Press Enter to Start";
         subtitle.text = "";
+        gameStatus = "serve";
+        StartGame();
     }
 
     // Update is called once per frame
     void Update()
     {
+
+
+
         if (gameStatus == "gameover" && Input.GetKey(start))
         {
-            PlayAgain();
+            BeginMatch();
         }
+
+
+
+    }
+
+    private void HidePlayerButtons()
+    {
+        one_player_button.gameObject.SetActive(false);
+        two_player_button.gameObject.SetActive(false);
+
+    }
+
+
+    private void ShowPlayerButtons()
+    {
+        one_player_button.gameObject.SetActive(true);
+        two_player_button.gameObject.SetActive(true);
 
     }
 
@@ -79,7 +110,35 @@ public class GameManager : MonoBehaviour
         gameStatus = "active";
         DisableUI();
     }
+    private void StartGame()
+    {
+        general.text = "How many hooman players?";
+        ShowPlayerButtons();
+        UpdateUI();
+    }
 
+    public void SetUpPlayers(int players)
+    {
+        numberPlayers = players;
+        if (numberPlayers == 1)
+        {
+            player = GameObject.Find("paddle_left");
+            player.GetComponent<PlayerControls>().human_player = true;
+        }
+        HidePlayerButtons();
+        EnterGame();
+    }
+
+    private void EnterGame()
+    {
+        BeginMatch();
+    }
+
+    private void UpdateUI()
+    {
+        DisableUI();
+        EnableUI();
+    }
     private void EnableUI()
     {
         p1_score_text.enabled = true;
@@ -144,7 +203,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void PlayAgain()
+    private void BeginMatch()
     {
         PlayerScore1 = 0;
         PlayerScore2 = 0;

@@ -9,6 +9,8 @@ public class Ball : MonoBehaviour
     private Rigidbody2D rigidBody;
     private Vector2 velocity;
 
+    public float boundary = 4.3f;
+
     public float x_speed = 100f;
     public float y_speed = 400f;
 
@@ -40,15 +42,16 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DoNoTGoPastBoundary();
         if (Input.GetKey(start) && GameManager.instance.GameStatus == "serve")
         {
             if (GameManager.instance.LastScored == 1)
             {
-                BallStartingMovement(0);
+                BallStartingMovement(1);
             }
             else if (GameManager.instance.LastScored == 2)
             {
-                BallStartingMovement(1);
+                BallStartingMovement(0);
             }
             else
             {
@@ -129,5 +132,26 @@ public class Ball : MonoBehaviour
         transform.position = position;
 
 
+    }
+
+    private void DoNoTGoPastBoundary()
+    {
+
+        var position = transform.position;
+        if (position.y > boundary)
+        {
+            position.y = boundary;
+            velocity.y = -rigidBody.velocity.y;
+            rigidBody.velocity = velocity;
+
+        }
+        else if (position.y < -boundary)
+        {
+            position.y = -boundary;
+            velocity.y = -rigidBody.velocity.y;
+            rigidBody.velocity = velocity;
+
+        }
+        transform.position = position;
     }
 }
